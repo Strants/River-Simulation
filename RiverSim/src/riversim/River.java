@@ -111,4 +111,15 @@ public class River {
         System.out.println("\nBoats finished: " + numberTrips);
     }
 
+    public int getNumberDays() {
+        return numberDays;
+    }
+
+    public int getNumberTrips() {
+        return numberTrips;
+    }
+
+    public WaterVehicle[] getStops() {
+        return (WaterVehicle[])stops.clone();
+    }
 }
