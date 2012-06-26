@@ -15,12 +15,15 @@ public class River {
     private int numberTrips;
     private int numberDays;
     private final int maxBoats;
+    private final int maxRafts;
+    private int numberRafts;
     private int numberBoats;
     private static final int MAX_DAYS = 180;
 
     public River(int numberStops, int maxBoats) {
         this.numberStops = numberStops;
         this.maxBoats = maxBoats;
+        maxRafts = numberStops - maxBoats;
         stops = new WaterVehicle[numberStops];
         numberTrips = 0;
         numberDays = 0;
@@ -28,66 +31,69 @@ public class River {
     }
 
     private int maxMove(WaterVehicle v, int stopNum) {
-        return Math.min(numberStops - 1, Math.min(v.maxMove(225. / ((double) (numberStops + 1))) + stopNum, numberStops - 5 + v.getNightsRested()));
+        return Math.min(numberStops, Math.min(v.maxMove(225. / ((double) (numberStops + 1))) + stopNum, numberStops - 6 + v.getNightsRested()));
     }
 
     public void dayCycle() {
         for (int i = stops.length - 1; i >= 0; i--) {
-            /*
-             * Ignore empty stops.
-             */
             if (stops[i] == null) {
-                continue;
-            }
-
-            if (maxMove(stops[i], i + 1) > numberStops) {
                 /*
-                 * If a boat can finish, take it out of the array and increment the number of trips completed.
+                 * Ignore unoccupied stops.
+                 */
+                continue;
+            } else if (maxMove(stops[i], i) > numberStops - 1) {
+                /*
+                 * If a boat can complete the journey. 
                  */
                 if (stops[i] instanceof Boat) {
                     numberBoats--;
                 }
-                stops[i] = null;
                 numberTrips++;
+                stops[i] = null;
             } else {
                 /*
-                 * Otherwise, check for the farthest position the boat can go and send it there.
+                 * Cycle through moves until we find a target move we can move to.
                  */
-                int targetPosition = maxMove(stops[i], i + 1);
-                while (stops[targetPosition] != null && targetPosition > i) {
-                    targetPosition--;
+                int targetMove;
+                for (targetMove = maxMove(stops[i], i); targetMove > i && stops[targetMove] != null; targetMove--);
+                stops[targetMove] = stops[i];
+                stops[targetMove].sleep();
+                if (i != targetMove) {
+                    stops[i] = null;
                 }
-                stops[targetPosition] = stops[i];
-                stops[i] = null;
-                stops[targetPosition].sleep();
             }
         }
+        /*
+         * All boats currently on the river have moved, so we add new boats.
+         */
         while (numberBoats < maxBoats) {
-            int i;
-            for (i = maxMove(new Boat(), 0); i > 0 && stops[i - 1] != null; i--) {
-                //Cycle through all the positions a boat at the start could move to.
-            }
-            if (i == 0) {
-                //If the boat cannot move.
+            Boat b = new Boat();
+            int targetSpace = maxMove(b, -1);
+            for (; targetSpace >= 0 && stops[targetSpace] != null; targetSpace--);
+            if (targetSpace < 0) {
+                /*
+                 * If the boat cannot move from the start
+                 */
                 break;
             } else {
-                stops[i - 1] = new Boat();
                 numberBoats++;
-                stops[i - 1].sleep();
-                //System.out.println("Boat added");
+                stops[targetSpace] = b;
+                stops[targetSpace].sleep();
             }
         }
-        while (true) {
-            int i;
-            for (i = maxMove(new Raft(), 0); stops[i] != null && i > 0; i--) {
-                //Cycle through all the positions a raft at the start could move to.
-            }
-            if (i == 0) {
-                //If the raft cannot move.
+        while (numberRafts < maxRafts) {
+            Raft r = new Raft();
+            int targetSpace = maxMove(r, -1);
+            for (; targetSpace >= 0 && stops[targetSpace] != null; targetSpace--);
+            if (targetSpace < 0) {
+                /*
+                 * If the boat cannot move from the start
+                 */
                 break;
             } else {
-                stops[i - 1] = new Raft();
-                stops[i - 1].sleep();
+                numberRafts++;
+                stops[targetSpace] = r;
+                stops[targetSpace].sleep();
             }
         }
         numberDays++;
@@ -97,9 +103,9 @@ public class River {
         System.out.println("Day " + numberDays + "\n");
         for (int i = 0; i < stops.length; i++) {
             if (stops[i] == null) {
-                System.out.println(i +":");
+                System.out.println((i+1) + ":");
             } else {
-                System.out.println(i + ":\t" + ((stops[i] instanceof Boat) ? ("B\t") : ("R\t")) + stops[i].getNightsRested());
+                System.out.println((i+1) + ":\t" + ((stops[i] instanceof Boat) ? ("B\t") : ("R\t")) + stops[i].getNightsRested());
             }
         }
         System.out.println("\nBoats finished: " + numberTrips);
