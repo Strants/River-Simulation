@@ -23,4 +23,15 @@ public abstract class WaterVehicle {
         return (int) Math.floor(12 * speed / stopDistance);
     }
     
+    public void sleep() {
+        nightsRested++;
+    }
+
+    public int getNightsRested() {
+        return nightsRested;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }    
 }
