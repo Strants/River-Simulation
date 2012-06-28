@@ -8,9 +8,20 @@ package riversim.vehicles;
  *
  * @author gavin
  */
-public class Boat extends WaterVehicle {
+public class Boat extends WaterVehicle implements Cloneable {
     
     public Boat() {
         super(8);
     }
+
+    @Override
+    public WaterVehicle clone() {
+        Boat b = new Boat();
+        while(b.getNightsRested() != getNightsRested()) {
+            b.sleep();
+        }
+        return b;
+    }
+    
+   
 }

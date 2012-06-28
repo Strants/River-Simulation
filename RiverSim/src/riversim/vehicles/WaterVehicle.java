@@ -8,7 +8,7 @@ package riversim.vehicles;
  *
  * @author gavin
  */
-public abstract class WaterVehicle {
+public abstract class WaterVehicle implements Cloneable {
     
     private final double speed;
     private int nightsRested;
@@ -61,5 +61,7 @@ public abstract class WaterVehicle {
         return hash;
     }
     
+    @Override
+    public abstract WaterVehicle clone();
     
 }

@@ -56,7 +56,7 @@ public class River {
                  */
                 int targetMove;
                 for (targetMove = maxMove(stops[i], i); targetMove > i && stops[targetMove] != null; targetMove--);
-                stops[targetMove] = stops[i];
+                stops[targetMove] = stops[i].clone();
                 stops[targetMove].sleep();
                 if (i != targetMove) {
                     stops[i] = null;
