@@ -1,5 +1,6 @@
 package riversim;
 
+import java.util.ArrayList;
 import riversim.vehicles.Boat;
 import riversim.vehicles.Raft;
 import riversim.vehicles.WaterVehicle;
@@ -103,9 +104,9 @@ public class River {
         System.out.println("Day " + numberDays + "\n");
         for (int i = 0; i < stops.length; i++) {
             if (stops[i] == null) {
-                System.out.println((i+1) + ":");
+                System.out.println((i + 1) + ":");
             } else {
-                System.out.println((i+1) + ":\t" + ((stops[i] instanceof Boat) ? ("B\t") : ("R\t")) + stops[i].getNightsRested());
+                System.out.println((i + 1) + ":\t" + ((stops[i] instanceof Boat) ? ("B\t") : ("R\t")) + stops[i].getNightsRested());
             }
         }
         System.out.println("\nBoats finished: " + numberTrips);
@@ -120,6 +121,54 @@ public class River {
     }
 
     public WaterVehicle[] getStops() {
-        return (WaterVehicle[])stops.clone();
+        return (WaterVehicle[]) stops.clone();
     }
+
+    /**
+     * A method to find the time until a boating schedule begins to loop on a river with a certain number of stops.
+     * @param numberStops The number of stops on the river.
+     */
+    //TODO: Add capability to add more rafts.
+    public static void loopFinder(int numberStops) {
+        River r = new River(numberStops, numberStops);
+        ArrayList<WaterVehicle[]> pastStates = new ArrayList<WaterVehicle[]>();
+        int loopStart = 0;
+        int loopEnd = 0;
+        boolean equal = false;
+        while (!equal) {
+            for (int i = 0; i < pastStates.size(); i++) {
+                boolean currentEqual = true;
+                for (int j = 0; j < r.getStops().length; j++) {
+                    if (pastStates.get(i)[j] == null && r.getStops()[j] != null) {
+                        /*
+                         * If the current state is occupied, and the past state is not.
+                         */
+                        currentEqual = false;
+                        break;
+
+                    }
+                    if (!pastStates.get(i)[j].equals(r.getStops()[j])) {
+                        /*
+                         * If only the past state is occupied, or both occupied by an different water vehicle
+                         */
+                        currentEqual = false;
+                        break;
+                    }
+                }
+                if (currentEqual) {
+                    loopStart = i;
+                    loopEnd = pastStates.size();
+                    equal = true;
+                    break;
+                }
+            }
+            pastStates.add(r.getStops());
+            if (!equal) {
+                r.dayCycle();
+            }
+        }
+        System.out.println("Loop Time is:" + (loopEnd - loopStart));
+        System.out.println("Preloop Time is: " + loopStart);
+    }
+
 }
