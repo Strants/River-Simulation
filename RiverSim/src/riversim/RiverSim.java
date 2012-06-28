@@ -53,11 +53,6 @@ public class RiverSim {
                          */
                         //System.out.println((i) + " is unequal at stop " + (j + 1));
                         //System.out.print(((pastStates.get(i)[j] instanceof Boat) ? ("B ") : ("R ")) + pastStates.get(i)[j].getNightsRested());
-                        if (r.getStops()[j] == null) {
-                            System.out.println(":: ");
-                        } else {
-                            System.out.println("::" + ((r.getStops()[j] instanceof Boat) ? ("B ") : ("R ")) + r.getStops()[j].getNightsRested());
-                        }
                         currentEqual = false;
                         break;
                     }
