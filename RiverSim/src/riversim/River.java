@@ -20,8 +20,13 @@ public class River {
     private int numberRafts;
     private int numberBoats;
     private static final int MAX_DAYS = 180;
+    private final int cycleLen;
 
     public River(int numberStops, int maxBoats) {
+        this(numberStops, maxBoats, 6);
+    }
+    
+    public River(int numberStops, int maxBoats, int cycleLen) {
         this.numberStops = numberStops;
         this.maxBoats = maxBoats;
         maxRafts = numberStops - maxBoats;
@@ -29,10 +34,11 @@ public class River {
         numberTrips = 0;
         numberDays = 0;
         numberBoats = 0;
+        this.cycleLen = cycleLen;
     }
 
     private int maxMove(WaterVehicle v, int stopNum) {
-        return Math.min(numberStops, Math.min(v.maxMove(225. / ((double) (numberStops + 1))) + stopNum, numberStops - 6 + v.getNightsRested()));
+        return Math.min(numberStops, Math.min(v.maxMove(225. / ((double) (numberStops + 1))) + stopNum, numberStops - cycleLen + v.getNightsRested()));
     }
 
     public void dayCycle() {
@@ -132,6 +138,7 @@ public class River {
     public static void loopFinder(int numberStops) {
         River r = new River(numberStops, numberStops);
         ArrayList<WaterVehicle[]> pastStates = new ArrayList<WaterVehicle[]>();
+        ArrayList<Integer> vehiclesFinished = new ArrayList<Integer>();
         int loopStart = 0;
         int loopEnd = 0;
         boolean equal = false;
@@ -163,12 +170,14 @@ public class River {
                 }
             }
             pastStates.add(r.getStops());
+            vehiclesFinished.add(r.getNumberTrips());
             if (!equal) {
                 r.dayCycle();
             }
         }
         System.out.println("Loop Time is:" + (loopEnd - loopStart));
         System.out.println("Preloop Time is: " + loopStart);
+        System.out.println("Number of trips in the cycle is " + (r.getNumberTrips() - vehiclesFinished.get(loopStart)));
     }
 
 }
